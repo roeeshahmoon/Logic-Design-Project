@@ -1,3 +1,4 @@
+`include "PE_unit.v"
 module tb_PE_unit();
     // Inputs
     reg [31:0] up_i, left_i;
