@@ -6,7 +6,7 @@ module Systolic_Mul(left_i_0, left_i_4, left_i_8, left_i_12,
 	input [31:0] left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3;
 	output reg done;
-	input clk_i_i, rst_ni;
+	input clk_i, rst_ni;
 	reg [3:0] count;
 	
 	
@@ -52,7 +52,7 @@ module Systolic_Mul(left_i_0, left_i_4, left_i_8, left_i_12,
 			count <= 0;
 		end
 		else begin
-			if(count == 10) begin
+			if(count == 9) begin
 				done <= 1;
 				count <= 0;
 			end
