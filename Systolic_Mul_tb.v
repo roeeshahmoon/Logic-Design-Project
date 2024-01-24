@@ -78,6 +78,8 @@ initial begin //Row 4 and Col 4
 	    up_i_3 <= 32'd4;     //b34
 	#10 left_i_12 <= 32'd16; //a44
 	    up_i_3 <= 32'd4;     //b44
+	#10 left_i_12 <= 32'd0;	 //0
+	    up_i_3 <= 32'd0;     //0
 end
 
 initial begin

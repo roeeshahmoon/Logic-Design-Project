@@ -52,7 +52,7 @@ module Systolic_Mul(left_i_0, left_i_4, left_i_8, left_i_12,
 			count <= 0;
 		end
 		else begin
-			if(count == 9) begin
+			if(count == 10) begin
 				done <= 1;
 				count <= 0;
 			end
