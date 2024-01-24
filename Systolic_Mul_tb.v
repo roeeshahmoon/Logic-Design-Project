@@ -70,7 +70,7 @@ initial begin //Row 4 and Col 4
 	    up_i_3 <= 32'd0;     //0
 	#10 left_i_12 <= 32'd0;  //0
 	    up_i_3 <= 32'd0;     //0
-	#10 left_i_12 <= 32'13; //a41
+	#10 left_i_12 <= 32'd13; //a41
 	    up_i_3 <= 32'd4;    //b14
 	#10 left_i_12 <= 32'd14; //a42
 	    up_i_3 <= 32'd4;    //b24
