@@ -1,4 +1,3 @@
-
 `include "Systolic_Mul.v"
 module Systolic_Mul_tb;
 
