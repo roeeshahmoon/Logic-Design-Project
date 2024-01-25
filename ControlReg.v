@@ -18,7 +18,7 @@ module ControlRegister(
 
   always @(posedge clk_i or posedge !rst_ni) begin
     if (!rst_ni) begin
-      control_reg <= 16'h0000;
+      control_reg <= 0;
     end else if (start_bit) begin
       // Check for write during operation and assert error signal
       if (control_reg[0]) begin
