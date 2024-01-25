@@ -1,62 +1,39 @@
 module OperandRegisters #(
-  parameter DATA_WIDTH = 8,
-  parameter ADDR_WIDTH = 4,
-  parameter MATRIX_SIZE = 16
+  parameter DATA_WIDTH = 32,
+  parameter ADDR_WIDTH = 5,
+  parameter MATRIX_SIZE = 16 //MaxDim**2
 )(
-  input wire clk,          // Clock input
-  input wire rst,          // Reset input
-  input wire [DATA_WIDTH-1:0] data_A, // Data input for Matrix-A
-  input wire [DATA_WIDTH-1:0] data_B, // Data input for Matrix-B
+  input wire clk_i,          
+  input wire rst_ni,          
+  input wire [DATA_WIDTH-1:0] write_data_Mat, // Data input for Matrix
 
-  output reg [DATA_WIDTH-1:0] read_data_A, // Read data for Matrix-A
-  output reg [DATA_WIDTH-1:0] read_data_B, // Read data for Matrix-B
+  output reg [DATA_WIDTH-1:0] read_data_Mat, // Read data for Matrix
 
-  input wire [ADDR_WIDTH-1:0] addr_A,  // Address input for Matrix-A
-  input wire [ADDR_WIDTH-1:0] addr_B,  // Address input for Matrix-B
-  input wire write_en_A,    // Write enable for Matrix-A
-  input wire write_en_B     // Write enable for Matrix-B
+  input wire [ADDR_WIDTH-1:0] addr_Mat,  // Address input for Matrix-A
+  input wire write_en_Mat,    
 );
-  reg [DATA_WIDTH-1:0] matrix_A [0:MATRIX_SIZE-1]; // Matrix-A registers
-  reg [DATA_WIDTH-1:0] matrix_B [0:MATRIX_SIZE-1]; // Matrix-B registers
+  reg [DATA_WIDTH-1:0] matrix_Mat [0:MATRIX_SIZE-1];
 
-  // Matrix-A Read Logic
-  always @(posedge clk or posedge rst) begin
-    if (rst) begin
-      read_data_A <= DATA_WIDTH'b0;
-    end else if (addr_A < MATRIX_SIZE) begin
-      read_data_A <= matrix_A[addr_A];
+  // Matrix Read Logic
+  always @(posedge clk_i or posedge !rst_ni) begin
+    if (!rst_ni) begin
+      read_data_Mat <= 0;
+    end else begin
+      read_data_mat <= matrix_Mat[addr_Mat];
     end
   end
 
-  // Matrix-B Read Logic
-  always @(posedge clk or posedge rst) begin
-    if (rst) begin
-      read_data_B <= DATA_WIDTH'b0;
-    end else if (addr_B < MATRIX_SIZE) begin
-      read_data_B <= matrix_B[addr_B];
-    end
-  end
 
-  // Matrix-A Write Logic
-  always @(posedge clk or posedge rst) begin
-    if (rst) begin
+  // Matrix Write Logic
+  always @(posedge clk_i or posedge rst_ni) begin
+    if (!rst_ni) begin
       for (i = 0; i < MATRIX_SIZE; i = i + 1) begin
-        matrix_A[i] <= DATA_WIDTH'b0;
+        matrix_Mat[i] <= 0;
       end
-    end else if (write_en_A && addr_A < MATRIX_SIZE) begin
-      matrix_A[addr_A] <= data_A;
+    end else if (write_en_Mat) begin
+      matrix_Mat[addr_Mat] <= write_data_Mat;
     end
   end
 
-  // Matrix-B Write Logic
-  always @(posedge clk or posedge rst) begin
-    if (rst) begin
-      for (i = 0; i < MATRIX_SIZE; i = i + 1) begin
-        matrix_B[i] <= DATA_WIDTH'b0;
-      end
-    end else if (write_en_B && addr_B < MATRIX_SIZE) begin
-      matrix_B[addr_B] <= data_B;
-    end
-  end
 
 endmodule
