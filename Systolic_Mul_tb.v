@@ -1,12 +1,12 @@
 `include "Systolic_Mul.v"
-module Systolic_Mul_tb;
+module Systolic_Mul_tb#(parameter DATA_WIDTH = 32);
 
 reg rst_ni, clk_i;
 
-reg [31:0] left_i_0, left_i_4, left_i_8, left_i_12, up_i_0, up_i_1, up_i_2, up_i_3;
+reg [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12, up_i_0, up_i_1, up_i_2, up_i_3;
 wire done;
 
-Systolic_Mul Sys_test(left_i_0, left_i_4, left_i_8, left_i_12,
+Systolic_Mul #(32) Sys_test(left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3,
 		      clk_i, rst_ni, done);
 

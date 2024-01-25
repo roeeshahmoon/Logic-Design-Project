@@ -1,9 +1,10 @@
 `include "PE_unit.v"
-module Systolic_Mul(left_i_0, left_i_4, left_i_8, left_i_12,
+module Systolic_Mul#(parameter DATA_WIDTH = 32)
+			(left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3,
 		      clk_i, rst_ni, done);
 	
-	input [31:0] left_i_0, left_i_4, left_i_8, left_i_12,
+	input [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3;
 	output reg done;
 	input clk_i, rst_ni;
@@ -11,11 +12,11 @@ module Systolic_Mul(left_i_0, left_i_4, left_i_8, left_i_12,
 	
 	
 	
-	wire [31:0] up_i_0, up_i_1, up_i_2, up_i_3;
-	wire [31:0] left_i_0, left_i_4, left_i_8, left_i_12;
-	wire [31:0] down_o_0, down_o_1, down_o_2, down_o_3, down_o_4, down_o_5, down_o_6, down_o_7, down_o_8, down_o_9, down_o_10, down_o_11, down_o_12, down_o_13, down_o_14, down_o_15;
-	wire [31:0] right_o_0, right_o_1, right_o_2, right_o_3, right_o_4, right_o_5, right_o_6, right_o_7, right_o_8, right_o_9, right_o_10, right_o_11, right_o_12, right_o_13, right_o_14, right_o_15;
-	wire [63:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
+	wire [DATA_WIDTH-1:0] up_i_0, up_i_1, up_i_2, up_i_3;
+	wire [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12;
+	wire [DATA_WIDTH-1:0] down_o_0, down_o_1, down_o_2, down_o_3, down_o_4, down_o_5, down_o_6, down_o_7, down_o_8, down_o_9, down_o_10, down_o_11, down_o_12, down_o_13, down_o_14, down_o_15;
+	wire [DATA_WIDTH-1:0] right_o_0, right_o_1, right_o_2, right_o_3, right_o_4, right_o_5, right_o_6, right_o_7, right_o_8, right_o_9, right_o_10, right_o_11, right_o_12, right_o_13, right_o_14, right_o_15;
+	wire [DATA_WIDTH-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
 	
 	
 	
