@@ -7,7 +7,7 @@ module matmul#(
   parameter DATA_WIDTH = 32, //Bit - Width of single element can be 8/16/32
   parameter BUS_WIDTH = 64, // APB Bus data bit width can be 16/32/64
   parameter ADDR_WIDTH  = 32, //APB address space bit width can be 16/24/32
-  parameter SP NTARGETS = 1, //The number of addressable targets in 
+  parameter SP_NTARGETS = 1, //The number of addressable targets in 
   parameter MAX_DIM = 4,
   parameter MATRIX_SIZE = 16 //MaxDim**2
 )(clk_i, rst_ni, psel_i, penable_i,
@@ -17,7 +17,7 @@ module matmul#(
 	input clk_i, rst_ni, psel_i, penable_i, pwrite_i;	
 	input [MAX_DIM-1:0] pstrb_i;
 	input [BUS_WIDTH-1:0] pwdata_i;
-	input [ADDR_WIDTH-1;0] paddr_i;
+	input [ADDR_WIDTH-1:0] paddr_i;
 	output pready_o, pslverr_o;
 	output [BUS_WIDTH-1:0] prdata_o;
 	output busy_o;

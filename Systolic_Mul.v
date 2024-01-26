@@ -10,8 +10,6 @@ module Systolic_Mul#(parameter DATA_WIDTH = 32)
 	input clk_i, rst_ni;
 	reg [3:0] count;
 	
-	
-	
 	wire [DATA_WIDTH-1:0] up_i_0, up_i_1, up_i_2, up_i_3;
 	wire [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12;
 	wire [DATA_WIDTH-1:0] down_o_0, down_o_1, down_o_2, down_o_3, down_o_4, down_o_5, down_o_6, down_o_7, down_o_8, down_o_9, down_o_10, down_o_11, down_o_12, down_o_13, down_o_14, down_o_15;
