@@ -1,4 +1,4 @@
-module OperandRegister #(
+module Operand_REG #(
   parameter DATA_WIDTH = 32,
   parameter ADDR_WIDTH = 4,
   parameter MATRIX_SIZE = 16 // MaxDim**2

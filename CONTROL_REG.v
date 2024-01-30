@@ -1,4 +1,4 @@
-module ControlRegister(
+module CONTROL_REG(
   input clk_i,      
   input rst_ni,      
   input start_bit,

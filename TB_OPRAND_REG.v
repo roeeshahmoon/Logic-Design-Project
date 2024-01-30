@@ -1,5 +1,5 @@
-`include "OrpandReg.v"
-module tb_OperandRegister;
+`include "OPRAND_REG.v"
+module TB_OPRAND_REG;
 
   // Parameters
   localparam DATA_WIDTH = 32;

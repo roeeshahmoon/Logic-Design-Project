@@ -1,7 +1,7 @@
-`include "PE_unit.v"
-`include "Systolic_Mul.v"
-`include "ControlReg.v"
-`include "OrpandReg.v"
+`include "PE_UNIT.v"
+`include "SYSTOLIC_MUL.v"
+`include "CONTROL_REG.v"
+`include "OPRAND_REG.v"
 
 module matmul#(
   parameter DATA_WIDTH = 32, //Bit - Width of single element can be 8/16/32

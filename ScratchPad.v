@@ -1,4 +1,4 @@
-module ScratchPad#(parameter DATA_WIDTH = 32,
+module SCRACHPAD#(parameter DATA_WIDTH = 32,
 					parameter ADDR_WIDTH = 4,
 					parameter MATRIX_SIZE = 16) // MaxDim**2
 			(clk_i, rst_ni, done,

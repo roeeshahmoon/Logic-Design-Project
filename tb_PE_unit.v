@@ -1,5 +1,5 @@
-`include "PE_unit.v"
-module tb_PE_unit#(parameter DATA_WIDTH = 32)();
+`include "PE_UNIT.v"
+module TB_PE_UNIT#(parameter DATA_WIDTH = 32)();
     // Inputs
     reg [DATA_WIDTH-1:0] up_i, left_i;
     reg clk_i, rst_ni;

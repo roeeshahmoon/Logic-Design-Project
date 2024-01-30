@@ -1,5 +1,5 @@
-`include "PE_unit.v"
-module Systolic_Mul#(parameter DATA_WIDTH = 32)
+`include "PE_UNIT.v"
+module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 			(left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3,
 		      clk_i, rst_ni, done);

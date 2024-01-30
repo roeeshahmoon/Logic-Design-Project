@@ -1,5 +1,5 @@
-`include "Systolic_Mul.v"
-module tb_Systolic_Mul#(parameter DATA_WIDTH = 32);
+`include "SYSTOLIC_MUL.v"
+module TB_SYSTOLIC_MUL#(parameter DATA_WIDTH = 32);
 
 reg rst_ni, clk_i;
 
