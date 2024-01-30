@@ -17,7 +17,7 @@ module TB_OPRAND_REG;
   wire [DATA_WIDTH-1:0] read_data_Mat_o;
 
   // Instantiate OperandRegister module
-  OperandRegister #(
+  OPRAND_REG #(
     .DATA_WIDTH(DATA_WIDTH),
     .ADDR_WIDTH(ADDR_WIDTH),
     .MATRIX_SIZE(MATRIX_SIZE)

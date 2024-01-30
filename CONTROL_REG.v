@@ -14,26 +14,26 @@ module CONTROL_REG(
   output reg pslverr_o  // Error signal
 );
 
-  reg [15:0] control_reg;
+  reg [15:0] control_register ;
 
   always @(posedge clk_i or posedge !rst_ni) begin
     if (!rst_ni) begin
-      control_reg <= 0;
+      control_register  <= 0;
     end else if (start_bit) begin
       // Check for write during operation and assert error signal
-      if (control_reg[0]) begin
+      if (control_register [0]) begin
         pslverr_o <= 1;
       end else begin
-        control_reg[0]  <= start_bit;
-        control_reg[1]  <= mode_bit;
-        control_reg[3:2] <= write_target;
-        control_reg[5:4] <= read_target;
-        control_reg[7:6] <= dataflow_type;
-        control_reg[9:8] <= dimension_n; //dimension Matrix A
-        control_reg[11:10] <= dimension_k; //dimension Matrix B
-        control_reg[13:12] <= dimension_m; //dimension Matrix C
-        control_reg[14] <= reload_operand_a; //Only required if using buffers/queues.
-        control_reg[15] <= reload_operand_b; //Only required if using buffers/queues.
+        control_register [0]  <= start_bit;
+        control_register [1]  <= mode_bit;
+        control_register [3:2] <= write_target;
+        control_register [5:4] <= read_target;
+        control_register [7:6] <= dataflow_type;
+        control_register [9:8] <= dimension_n; //dimension Matrix A
+        control_register [11:10] <= dimension_k; //dimension Matrix B
+        control_register [13:12] <= dimension_m; //dimension Matrix C
+        control_register [14] <= reload_operand_a; //Only required if using buffers/queues.
+        control_register [15] <= reload_operand_b; //Only required if using buffers/queues.
         // Reset error signal
         pslverr_o <= 0;
       end

@@ -9,7 +9,7 @@ module TB_PE_UNIT#(parameter DATA_WIDTH = 32)();
     wire [63:0] res_o;
 
     // Instance PE module
-    PE_unit #(32) PE_test (
+    PE_UNIT #(32) PE_TEST (
         .up_i(up_i),
         .left_i(left_i),
         .clk_i(clk_i),

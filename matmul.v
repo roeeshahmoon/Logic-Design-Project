@@ -3,7 +3,7 @@
 `include "CONTROL_REG.v"
 `include "OPRAND_REG.v"
 
-module matmul#(
+module MATMUL#(
   parameter DATA_WIDTH = 32, //Bit - Width of single element can be 8/16/32
   parameter BUS_WIDTH = 64, // APB Bus data bit width can be 16/32/64
   parameter ADDR_WIDTH  = 32, //APB address space bit width can be 16/24/32
