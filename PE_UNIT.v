@@ -1,6 +1,6 @@
 `resetall
 `timescale 1ns/10ps
-module PE_unit#(parameter DATA_WIDTH = 32)(
+module PE_UNIT#(parameter DATA_WIDTH = 32)(
 	up_i, left_i, clk_i, rst_ni, down_o, right_o, res_o, carry_o);
 	
 	input [DATA_WIDTH-1:0] up_i, left_i;

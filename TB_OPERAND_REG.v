@@ -1,5 +1,5 @@
-`include "OPRAND_REG.v"
-module TB_OPRAND_REG;
+`include "OPREAND_REG.v"
+module TB_OPERAND_REG;
 
   // Parameters
   localparam DATA_WIDTH = 32;
@@ -17,7 +17,7 @@ module TB_OPRAND_REG;
   wire [DATA_WIDTH-1:0] read_data_Mat_o;
 
   // Instantiate OperandRegister module
-  OPRAND_REG #(
+  OPERAND_REG #(
     .DATA_WIDTH(DATA_WIDTH),
     .ADDR_WIDTH(ADDR_WIDTH),
     .MATRIX_SIZE(MATRIX_SIZE)
