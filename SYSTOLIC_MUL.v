@@ -42,7 +42,7 @@ module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 	PE_unit PE14 (down_o_10, right_o_13, clk_i, rst_ni, down_o_14, right_o_14, res_o_14, carry_o_14);
 	PE_unit PE15 (down_o_11, right_o_14, clk_i, rst_ni, down_o_15, right_o_15, res_o_15, carry_o_15);
 	
-	always @(posedge clk_i or posedge !rst_ni) begin
+	always @(posedge clk_i) begin
 		if(!rst_ni) begin
 			done <= 0;
 			count <= 0;

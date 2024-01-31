@@ -11,7 +11,7 @@ module PE_UNIT#(parameter DATA_WIDTH = 32)(
 	wire [DATA_WIDTH*2 -1:0] Mul_w;
 
 	
-	always @(posedge !rst_ni or posedge clk_i) begin
+	always @(posedge clk_i) begin
 		if(!rst_ni) begin
 			res_o <= 0;
 			down_o <= 0;
