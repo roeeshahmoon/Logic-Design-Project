@@ -9,23 +9,23 @@ module PE_UNIT#(parameter DATA_WIDTH = 32)(
 	output wire carry_o;
 	output reg [DATA_WIDTH*2 -1:0] res_o;
 	wire [DATA_WIDTH*2 -1:0] Mul_w;
-
 	
-	always @(posedge clk_i) begin
+	
+	always @(posedge !rst_ni or posedge clk_i) begin
 		if(!rst_ni) begin
 			res_o <= 0;
 			down_o <= 0;
 			right_o <= 0;
 		end
 		else begin
-			res_o <= res_o + Mul_w;
+			res_o <= res_o + up_i*left_i;
 			right_o <= left_i;
 			down_o <= up_i;
 		end
 	end
 	
 	assign Mul_w = up_i*left_i;
-	assign carry_o = Mul_w[DATA_WIDTH*2 -1] & res_o[DATA_WIDTH*2 -1];
+	assign carry_o = (Mul_w[DATA_WIDTH*2 -1] & res_o[DATA_WIDTH*2 -1]);
 	
 	
 endmodule

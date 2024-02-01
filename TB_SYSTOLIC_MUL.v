@@ -4,11 +4,17 @@ module TB_SYSTOLIC_MUL#(parameter DATA_WIDTH = 32);
 reg rst_ni, clk_i;
 
 reg [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12, up_i_0, up_i_1, up_i_2, up_i_3;
+wire [DATA_WIDTH*2-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
+
 wire done;
 
 SYSTOLIC_MUL #(32) Sys_test(left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3,
-		      clk_i, rst_ni, done);
+		      clk_i, rst_ni, done,
+			  res_o_0, res_o_1, res_o_2, res_o_3,
+			  res_o_4, res_o_5, res_o_6, res_o_7, 
+			  res_o_8, res_o_9, res_o_10, res_o_11,
+			  res_o_12, res_o_13, res_o_14, res_o_15);
 
 
 initial begin //Row 1 and Col 1

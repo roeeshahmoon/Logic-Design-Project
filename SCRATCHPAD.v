@@ -7,8 +7,8 @@ module SCRACHPAD#(parameter DATA_WIDTH = 32,
 			res_o_8, res_o_9, res_o_10, res_o_11,
 			res_o_12, res_o_13, res_o_14, res_o_15);
 			  
-	input wire [DATA_WIDTH-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
-	input wire clk_i, rst_ni, done;
+	input reg [DATA_WIDTH-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
+	input reg clk_i, rst_ni, done;
 	integer i;
 	
     reg [DATA_WIDTH-1:0] ScratchPad [0:MATRIX_SIZE-1];

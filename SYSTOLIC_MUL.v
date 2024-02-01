@@ -2,7 +2,11 @@
 module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 			(left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3,
-		      clk_i, rst_ni, done);
+		      clk_i, rst_ni,done,
+			  res_o_0, res_o_1, res_o_2, res_o_3,
+			  res_o_4, res_o_5, res_o_6, res_o_7, 
+			  res_o_8, res_o_9, res_o_10, res_o_11,
+			  res_o_12, res_o_13, res_o_14, res_o_15);
 	
 	input [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3;
@@ -12,7 +16,7 @@ module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 	
 	wire [DATA_WIDTH-1:0] down_o_0, down_o_1, down_o_2, down_o_3, down_o_4, down_o_5, down_o_6, down_o_7, down_o_8, down_o_9, down_o_10, down_o_11, down_o_12, down_o_13, down_o_14, down_o_15;
 	wire [DATA_WIDTH-1:0] right_o_0, right_o_1, right_o_2, right_o_3, right_o_4, right_o_5, right_o_6, right_o_7, right_o_8, right_o_9, right_o_10, right_o_11, right_o_12, right_o_13, right_o_14, right_o_15;
-	wire [DATA_WIDTH-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
+	output wire [DATA_WIDTH*2-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
 	wire carry_o_0, carry_o_1, carry_o_2, carry_o_3, carry_o_4, carry_o_5, carry_o_6, carry_o_7, carry_o_8, carry_o_9, carry_o_10, carry_o_11, carry_o_12, carry_o_13, carry_o_14, carry_o_15;
 
 	//get input from outside up and left
@@ -42,7 +46,7 @@ module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 	PE_UNIT PE14 (down_o_10, right_o_13, clk_i, rst_ni, down_o_14, right_o_14, res_o_14, carry_o_14);
 	PE_UNIT PE15 (down_o_11, right_o_14, clk_i, rst_ni, down_o_15, right_o_15, res_o_15, carry_o_15);
 	
-	always @(posedge clk_i) begin
+	always @(posedge !rst_ni or posedge clk_i) begin
 		if(!rst_ni) begin
 			done <= 0;
 			count <= 0;
