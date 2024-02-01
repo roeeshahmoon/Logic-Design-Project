@@ -11,7 +11,7 @@ module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 	input [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12,
 		      up_i_0, up_i_1, up_i_2, up_i_3;
 	output reg done;
-	input clk_i, rst_ni;
+	input wire clk_i, rst_ni;
 	reg [3:0] count;
 	
 	wire [DATA_WIDTH-1:0] down_o_0, down_o_1, down_o_2, down_o_3, down_o_4, down_o_5, down_o_6, down_o_7, down_o_8, down_o_9, down_o_10, down_o_11, down_o_12, down_o_13, down_o_14, down_o_15;
@@ -46,7 +46,7 @@ module SYSTOLIC_MUL#(parameter DATA_WIDTH = 32)
 	PE_UNIT PE14 (down_o_10, right_o_13, clk_i, rst_ni, down_o_14, right_o_14, res_o_14, carry_o_14);
 	PE_UNIT PE15 (down_o_11, right_o_14, clk_i, rst_ni, down_o_15, right_o_15, res_o_15, carry_o_15);
 	
-	always @(posedge !rst_ni or posedge clk_i) begin
+	always @(posedge clk_i) begin
 		if(!rst_ni) begin
 			done <= 0;
 			count <= 0;

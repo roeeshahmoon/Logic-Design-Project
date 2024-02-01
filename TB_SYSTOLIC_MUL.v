@@ -18,7 +18,7 @@ SYSTOLIC_MUL #(32) Sys_test(left_i_0, left_i_4, left_i_8, left_i_12,
 
 
 initial begin //Row 1 and Col 1
-	#3  left_i_0 <= 32'd1;   //a11
+	#20  left_i_0 <= 32'd1;   //a11
 	    up_i_0 <= 32'd1; 	 //b11
 	#10 left_i_0 <= 32'd2;   //a12
 	    up_i_0 <= 32'd1;	 //b21
@@ -35,7 +35,7 @@ initial begin //Row 1 and Col 1
 end                          
                              
 initial begin //Row 2 and Col 2               
-	#3  left_i_4 <= 32'd0;   //0
+	#20  left_i_4 <= 32'd0;   //0
 	    up_i_1 <= 32'd0;     //0
 	#10 left_i_4 <= 32'd5;   //a21
 	    up_i_1 <= 32'd2;    //b12
@@ -52,7 +52,7 @@ initial begin //Row 2 and Col 2
 end
 
 initial begin //Row 3 and Col 3 
-	#3  left_i_8 <= 32'd0;	 //0
+	#20  left_i_8 <= 32'd0;	 //0
 	    up_i_2 <= 32'd0;     //0
 	#10 left_i_8 <= 32'd0;   //0
 	    up_i_2 <= 32'd0;     //0
@@ -69,7 +69,7 @@ initial begin //Row 3 and Col 3
 end
 
 initial begin //Row 4 and Col 4
-	#3  left_i_12 <= 32'd0;	 //0
+	#20  left_i_12 <= 32'd0;	 //0
 	    up_i_3 <= 32'd0;     //0
 	#10 left_i_12 <= 32'd0;  //0
 	    up_i_3 <= 32'd0;     //0
@@ -90,7 +90,7 @@ end
 initial begin
 rst_ni <= 0;
 clk_i <= 0;
-#3
+#20
 rst_ni <= 1;
 end
 
