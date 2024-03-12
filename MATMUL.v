@@ -1,252 +1,345 @@
-`include "PE_UNIT.v"
-`include "SYSTOLIC_MUL.v"
-`include "CONTROL_REG.v"
-`include "OPERAND_REG.v"
+`resetall
+`timescale 1ns/10ps
+`include "matmul_calculator.v"
+`include "control_reg.v"
+`include "operand_registerA.v"
+`include "operand_registerB.v"
+`include "address_decoder.v"
+`include "scratchpad.v"
 
-module MATMUL#(
-  parameter DATA_WIDTH = 32, //Bit - Width of single element can be 8/16/32
-  parameter BUS_WIDTH = 64, // APB Bus data bit width can be 16/32/64
-  parameter ADDR_WIDTH  = 32, //APB address space bit width can be 16/24/32
-  parameter SP_NTARGETS = 1, //The number of addressable targets in 
-  parameter MAX_DIM = 4,
-  parameter MATRIX_SIZE = 16) //MaxDim**2
-			(clk_i, rst_ni, psel_i, penable_i,
+`define IDLE 1'b0 
+`define WAIT 1'b1 
+
+module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_WIDTH = 16,parameter SP_NTARGETS = 2)(clk_i, rst_ni, psel_i, penable_i,
 			pwrite_i, pstrb_i, pwdata_i, paddr_i,
-			pready_o, pslverr_o, prdata_o, busy_o,
-			write_data_Mat_A, write_data_Mat_B,
-			read_data_Mat_A,read_data_Mat_B,
-			addr_Mat_A, addr_Mat_B, write_en_Mat_A, write_en_Mat_B);
-				
+			pready_o, pslverr_o, prdata_o, busy_o, done_o);
+			
+
+    localparam MAX_DIM  = BUS_WIDTH/DATA_WIDTH;			
+			
 	input clk_i, rst_ni, psel_i, penable_i, pwrite_i;	
 	input [MAX_DIM-1:0] pstrb_i;
 	input [BUS_WIDTH-1:0] pwdata_i;
 	input [ADDR_WIDTH-1:0] paddr_i;
-	output pready_o, pslverr_o;
-	output [BUS_WIDTH-1:0] prdata_o;
-	output busy_o;
+	output reg  pready_o, pslverr_o;
+	output reg [BUS_WIDTH-1:0] prdata_o;
+	output wire busy_o,done_o;
 	
-	input wire [DATA_WIDTH-1:0] write_data_Mat_A;
-    input wire [DATA_WIDTH-1:0] write_data_Mat_B;
-    input wire [DATA_WIDTH-1:0] read_data_Mat_A;
-    input wire [DATA_WIDTH-1:0] read_data_Mat_B;
-    input wire [ADDR_WIDTH-1:0] addr_Mat_A;
-    input wire [ADDR_WIDTH-1:0] addr_Mat_B;
-    input wire write_en_Mat_A;
-    input wire write_en_Mat_B;
+
+	
+
+
 	
 	
 	
     // Signals for Systolic_Mul module
 
-  wire [DATA_WIDTH-1:0] left_i_0, left_i_4, left_i_8, left_i_12,
-                      up_i_0, up_i_1, up_i_2, up_i_3;
-  wire done;
-  
-
-  always @(posedge clk_i or !rst_ni) begin
-		if(!rst_ni) begin
-			count <= 0;
-		end else if(count == 0);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-		  
-		end else if(count == 1);
-		  addr_Mat_A <= 1; 
-		  addr_Mat_B <= 1; 
-
-		  left_i_0 <= 0;
-		  up_i_0 <= 0;
-		  
-		  left_i_4 <= read_data_Mat_A;
-		  up_i_1 <= read_data_Mat_B;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-	  
-		end else if(count == 2);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-		  
-		end else if(count == 3);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-		  
-		  
-		end else if(count == 4);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-		  
-		end else if(count == 5);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-	  
-		end else if(count == 6);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
-		  
-		end else if(count == 7);
-		  addr_Mat_A <= 0; 
-		  addr_Mat_B <= 0; 
-
-		  left_i_0 <= read_data_Mat_A;
-		  up_i_0 <= read_data_Mat_B;
-		  
-		  left_i_4 <= 0;
-		  up_i_1 <= 0;
-		  
-		  left_i_8 <= 0;
-		  up_i_2 <= 0; 
-
-		  left_i_12 <= 0;
-		  up_i_3 <= 0;
+	wire [BUS_WIDTH-1:0] read_data_Mat_A,read_data_Mat_B,read_data_SP;
+	reg [BUS_WIDTH-1:0] write_data_Mat_A,write_data_Mat_B;
+	reg [15:0] write_data_control;
+	wire [BUS_WIDTH-1:0] buffer_Mat_A,buffer_Mat_B;
+	reg [BUS_WIDTH-1:0] prdata_mux;
+	wire [MAX_DIM**2 - 1:0] flags;
+	wire [15:0] control_register;
+	wire [BUS_WIDTH*MAX_DIM**2 - 1:0] MAT_RES,operand_C_i;
+	reg [BUS_WIDTH*MAX_DIM**2 - 1:0] operand_C_o;
+	wire [1:0] n;
+	wire [1:0] k;
+	wire [1:0] m;
+	wire done;
+	wire   [$clog2(3*MAX_DIM-2) -1:0] counter;
+	wire [BUS_WIDTH-1:0] S [0:MAX_DIM-1][0:MAX_DIM-1];
+	reg [0:0] state;
+	reg busy_signal,start_bit ;
+	reg [5+$clog2(MAX_DIM)-1:5] sub_addressing_operand ;
+	reg [5+2*$clog2(MAX_DIM)-1:5] sub_addressing_sp ;
+	wire  Address_sel_Mat_A,Address_sel_Mat_B,Address_sel_control_reg,Address_sel_SP,Address_sel_flags_reg;
+	reg  write_ena_Mat_A,write_ena_Mat_B,write_ena_control_reg;
+	wire [1:0] write_target_sp,read_target_sp;
 	
-	
+	assign write_target_sp = control_register[3:2];
+	assign read_target_sp = control_register[5:4];
+  
+     // Instantiate OperandRegisters for Matrix A
+	  operand_register_a #(
+		.DATA_WIDTH(DATA_WIDTH),
+		.BUS_WIDTH(BUS_WIDTH)
+	  ) operand_A_inst (
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.start_bit(control_register [0]),
+		.reload_op(control_register[14]),
+		.pwdata_i(write_data_Mat_A),
+		.read_data_Mat_o(read_data_Mat_A),
+		.buff(buffer_Mat_A),
+		.addr_Mat_i(sub_addressing_operand),
+		.write_en_Mat_i(write_ena_Mat_A),
+		.pstrb_i(pstrb_i),
+		.counter(counter),
+		.n(n),
+		.k(k)
+	  );
 
-	  end
-  end
-  
-  
-  // Instantiate OperandRegisters for Matrix A
-  OperandRegisters #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .MATRIX_SIZE(MATRIX_SIZE)
-  ) operand_A_inst (
-    .clk_i(clk_i),
-    .rst_ni(rst_ni),
-    .write_data_Mat(write_data_Mat_A),
-    .read_data_Mat(read_data_Mat_A),
-    .addr_Mat(addr_Mat_A),
-    .write_en_Mat(write_en_Mat_A)
-  );
+	  // Instantiate OperandRegisters for Matrix B
+	  operand_register_b #(
+		.DATA_WIDTH(DATA_WIDTH),
+		.BUS_WIDTH(BUS_WIDTH)
+	  ) operand_B_inst (
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.start_bit(control_register [0]),
+		.reload_op(control_register[15]),
+		.pwdata_i(write_data_Mat_B),
+		.read_data_Mat_o(read_data_Mat_B),
+		.buff(buffer_Mat_B),
+		.addr_Mat_i(sub_addressing_operand),
+		.write_en_Mat_i(write_ena_Mat_B),
+		.pstrb_i(pstrb_i),
+		.counter(counter),
+		.k(k),
+		.m(m)
+	  );
+	  
 
-  // Instantiate OperandRegisters for Matrix B
-  OperandRegisters #(
-    .DATA_WIDTH(DATA_WIDTH),
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .MATRIX_SIZE(MATRIX_SIZE)
-  ) operand_B_inst (
-    .clk_i(clk_i),
-    .rst_ni(rst_ni),
-    .write_data_Mat(write_data_Mat_B),
-    .read_data_Mat(read_data_Mat_B),
-    .addr_Mat(addr_Mat_B),
-    .write_en_Mat(write_en_Mat_B)
-  );
-  
-    // Instantiate your Systolic_Mul module
-  Systolic_Mul #(DATA_WIDTH) Systolic_Mul_inst (
-    .left_i_0(left_i_0),
-    .left_i_4(left_i_4),
-    .left_i_8(left_i_8),
-    .left_i_12(left_i_12),
-    .up_i_0(up_i_0),
-    .up_i_1(up_i_1),
-    .up_i_2(up_i_2),
-    .up_i_3(up_i_3),
-    .clk_i(clk_i),
-    .rst_ni(rst_ni),
-    .done(done)
-  );
-  
 
-  // Instantiate the ScratchPad module
-  ScratchPad #(DATA_WIDTH, ADDR_WIDTH, MATRIX_SIZE)
-    SP_inst (
-      .clk_i(clk),
-      .rst_ni(rst_ni),
-      .done(done),
-      .res_o_0(res_o_0),
-      .res_o_1(res_o_1),
-      .res_o_2(res_o_2),
-      .res_o_3(res_o_3),
-      .res_o_4(res_o_4),
-      .res_o_5(res_o_5),
-      .res_o_6(res_o_6),
-      .res_o_7(res_o_7),
-      .res_o_8(res_o_8),
-      .res_o_9(res_o_9),
-      .res_o_10(res_o_10),
-      .res_o_11(res_o_11),
-      .res_o_12(res_o_12),
-      .res_o_13(res_o_13),
-      .res_o_14(res_o_14),
-      .res_o_15(res_o_15)
+
+
+    matmul_calculator#(.DATA_WIDTH(DATA_WIDTH),.BUS_WIDTH(BUS_WIDTH)) matmul_calculator_by_systolic_array (
+        .A(buffer_Mat_A),
+		.B(buffer_Mat_B),
+		.C(operand_C_o),
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.start_bit(control_register [0]),
+		.mode_bit(control_register[1]),
+		.flags(flags),
+        .M(MAT_RES),
+		.done(done),
+		.counter(counter)
     );
+	
+	
+	control_reg control_register_module (        
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.done(done),
+		.ena_write_control_reg(write_ena_control_reg||done),
+		.start_bit(start_bit),
+		.mode_bit(write_data_control[1]),
+		.write_target(write_data_control[3:2]),
+        .read_target(write_data_control[5:4]),
+		.dataflow_type(write_data_control[7:6]),
+		.dimension_n(write_data_control[9:8]),
+		.dimension_k(write_data_control[11:10]),
+		.dimension_m(write_data_control[13:12]),
+		.reload_operand_a(write_data_control[14]),
+		.reload_operand_b(write_data_control[15]),
+		.control_register(control_register)
+		);
+	
+	address_decoder  address_decoder_inst (
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.paddr_i(paddr_i[4:2]),
+		.Address_sel_Mat_A(Address_sel_Mat_A),
+		.Address_sel_Mat_B(Address_sel_Mat_B),
+		.Address_sel_control_reg(Address_sel_control_reg),
+		.Address_sel_SP(Address_sel_SP),
+		.Address_sel_flags_reg(Address_sel_flags_reg)
+	  );
 
+	scratchpad#(.BUS_WIDTH(BUS_WIDTH),.DATA_WIDTH(DATA_WIDTH),.ADDR_WIDTH(ADDR_WIDTH),.SP_NTARGETS(SP_NTARGETS)) scratchpad_inst
+			(.clk_i(clk_i), 
+			 .rst_ni(rst_ni),
+			 .write_target(write_target_sp),
+			 .address_i(paddr_i[3:2]),
+			 .address_i_for_op_c(read_target_sp),
+			 .ena_write(busy_signal),
+			 .sub_address_i(sub_addressing_sp),
+			 .Data_i(MAT_RES),
+ 			 .Data_o(read_data_SP),
+			 .Mat_o(operand_C_i));
+ 
+
+
+assign n = control_register[9:8];
+assign k = control_register[11:10];
+assign m = control_register[13:12]; 
+ genvar row;
+ generate for(row = 0; row<MAX_DIM; row = row + 1) begin: test_result_row 
+	genvar col;
+	for(col=0;col<MAX_DIM;col=col+1) begin: test_result_col 
+		assign S[row][col] = MAT_RES[(row*MAX_DIM+col+1)*BUS_WIDTH-1:(row*MAX_DIM+col)*BUS_WIDTH];
+	end
+end
+endgenerate
+   
+   
+ always	@(*) begin : mux_for_pdata_o
+	if(!rst_ni) begin 
+		prdata_mux <= 0;
+	end
+	else begin 
+		if(Address_sel_Mat_A) begin 
+			prdata_mux<=read_data_Mat_A;
+		end 
+		else if(Address_sel_Mat_B) begin 
+			prdata_mux<=read_data_Mat_B;
+		end
+		else if(Address_sel_control_reg) begin 
+			prdata_mux<=control_register;
+		end
+		else if(Address_sel_SP) begin 
+			prdata_mux	<=	read_data_SP;
+		end
+		else if(Address_sel_flags_reg) begin 
+			prdata_mux	<=	flags;
+		end
+		else begin 
+			prdata_mux <= 0;
+		end
+	end
+end
+
+			
+always @(posedge clk_i) begin 
+	if(!rst_ni) begin 
+		operand_C_o = 0;
+	end
+	else if(!busy_signal) begin 
+		operand_C_o = operand_C_i;
+	end
+	else begin 
+		operand_C_o = operand_C_o;
+	end
+end
+   
+   
+ 
+ always @(posedge clk_i)
+ begin
+ 
+   if(!rst_ni)
+     begin
+		state = `IDLE;  
+		prdata_o = 0;
+		pready_o =0;
+		busy_signal	=	0;
+		pslverr_o	= 1'b0;	
+		write_ena_control_reg = 0;	
+		write_ena_Mat_B = 0;
+		write_ena_Mat_A = 0;
+		start_bit = 0;
+		
+	  
+     end
+   else
+     begin
+		//state = state;
+		case (state)
+		`IDLE: begin 
+			prdata_o = 0;
+			busy_signal = done ? 0:busy_signal;
+			start_bit = done ?   0:start_bit;
+			write_ena_control_reg = 0;
+			write_ena_Mat_A = 0;
+			write_ena_Mat_B = 0;
+			
+			
+			if(psel_i) begin
+				pready_o = 1'b1;
+				state = `WAIT;
+				sub_addressing_sp = paddr_i[5+2*$clog2(MAX_DIM)-1:5];
+
+			end
+			else begin
+				pready_o	= 1'b0;
+				state = `IDLE;
+			end								
+		end
+			
+		`WAIT: begin
+			if(psel_i) begin 
+				pready_o = 1'b1;
+				state = `WAIT;
+				sub_addressing_sp = paddr_i[5+2*$clog2(MAX_DIM)-1:5];
+			end
+			else begin 
+				state = `IDLE;
+				pready_o = 1'b0;
+			end
+			if(psel_i&&penable_i) begin 
+				prdata_o = prdata_mux;
+				if(pwrite_i) begin
+					busy_signal = done ? 0:busy_signal;
+					if(busy_signal || pstrb_i == 0) begin 
+						pslverr_o	= 1'b1;
+					end
+					else if(!paddr_i[2] && !paddr_i[3] && !paddr_i[4]) begin 
+						write_data_control[15:1] = pwdata_i[15:1];
+						start_bit = pwdata_i[0];
+						busy_signal = start_bit;
+						write_ena_control_reg = 1;
+						write_ena_Mat_A = 0;
+						write_ena_Mat_B = 0;
+						
+						
+						//pslverr_o	= n >= MAX_DIM-1 || k >= MAX_DIM-1 || m >= MAX_DIM-1 ? 1:0;
+					end
+					else if(paddr_i[2] && !paddr_i[3] && !paddr_i[4]) begin 
+						write_data_Mat_A = pwdata_i;
+						write_ena_Mat_A = 1;
+						write_ena_Mat_B = 0;
+						write_ena_control_reg = 0;
+						sub_addressing_operand = paddr_i[5+$clog2(MAX_DIM)-1:5];
+						//pslverr_o	= sub_addressing_operand > n ? 1:0;
+					end
+					else if(!paddr_i[2] && paddr_i[3] && !paddr_i[4]) begin 
+						write_data_Mat_B = pwdata_i;
+						write_ena_Mat_B = 1;
+						write_ena_Mat_A = 0;
+						write_ena_control_reg = 0;
+						sub_addressing_operand = paddr_i[5+$clog2(MAX_DIM)-1:5];
+						//pslverr_o	= sub_addressing_operand > k ? 1:0;
+					end
+					else begin 
+						write_ena_control_reg = 0;
+						write_ena_Mat_A = 0;
+						write_ena_Mat_B = 0;
+					end
+				end
+				else begin 
+					busy_signal = done ? 0:busy_signal;
+					start_bit = done ? 0:start_bit;
+					
+				end
+			
+			
+					
+			end
+			else begin 
+				busy_signal = done ? 0:busy_signal;
+				start_bit = done ? 0:start_bit;	
+			end
+
+				
+		end	
+		   
+		
+		
+	
+		default: begin
+
+			state = `IDLE;
+
+		end
+		
+		endcase
+	end
+	
+end
+
+assign  busy_o = busy_signal;
+assign done_o = done;
+ 
 endmodule

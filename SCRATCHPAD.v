@@ -1,42 +1,61 @@
-module SCRACHPAD#(parameter DATA_WIDTH = 32,
-					parameter ADDR_WIDTH = 4,
-					parameter MATRIX_SIZE = 16) // MaxDim**2
-			(clk_i, rst_ni, done,
-			res_o_0, res_o_1, res_o_2, res_o_3,
-			res_o_4, res_o_5, res_o_6, res_o_7,
-			res_o_8, res_o_9, res_o_10, res_o_11,
-			res_o_12, res_o_13, res_o_14, res_o_15);
-			  
-	input reg [DATA_WIDTH-1:0] res_o_0, res_o_1, res_o_2, res_o_3, res_o_4, res_o_5, res_o_6, res_o_7, res_o_8, res_o_9, res_o_10, res_o_11, res_o_12, res_o_13, res_o_14, res_o_15;
-	input reg clk_i, rst_ni, done;
-	integer i;
-	
-    reg [DATA_WIDTH-1:0] ScratchPad [0:MATRIX_SIZE-1];
+module scratchpad#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 8,parameter ADDR_WIDTH = 16,parameter SP_NTARGETS = 2) // MaxDim**2
+			(clk_i, rst_ni,write_target,ena_write,address_i_for_op_c,sub_address_i,address_i,
+			Data_i, Data_o,Mat_o);
 
-  // ScratchPad Write Logic
-  always @(posedge clk_i or posedge !rst_ni) begin
-    if (!rst_ni) begin
-      for (i = 0; i < MATRIX_SIZE; i = i + 1) begin
-        ScratchPad[i] <= 0;
-      end
-    end else if (done) begin
-			ScratchPad[0] <= res_o_0;
-			ScratchPad[1] <= res_o_1;
-			ScratchPad[2] <= res_o_2;
-			ScratchPad[3] <= res_o_3;
-			ScratchPad[4] <= res_o_4;
-			ScratchPad[5] <= res_o_5;
-			ScratchPad[6] <= res_o_6;
-            ScratchPad[7] <= res_o_7;
-			ScratchPad[8] <= res_o_8;
-            ScratchPad[9] <= res_o_9;
-			ScratchPad[10] <= res_o_10;
-			ScratchPad[11] <= res_o_11;
-			ScratchPad[12] <= res_o_12;
-			ScratchPad[13] <= res_o_13;
-			ScratchPad[14] <= res_o_14;
-			ScratchPad[15] <= res_o_15;			
+	localparam MAX_DIM = BUS_WIDTH/DATA_WIDTH;
+
+
+	input wire [BUS_WIDTH*MAX_DIM**2-1:0] Data_i;
+	input wire [1:0]  write_target;
+	input wire [1:0]  address_i;
+	input wire [1:0]  address_i_for_op_c;
+	input wire [2*$clog2(MAX_DIM)-1:0] sub_address_i;
+	input wire clk_i, rst_ni,ena_write;
+	output wire [BUS_WIDTH*MAX_DIM**2-1:0] Mat_o;
+	output reg[BUS_WIDTH-1:0] Data_o;
+	
+
+	reg [BUS_WIDTH - 1:0] scratchpad_reg [SP_NTARGETS-1:0][MAX_DIM**2-1:0];
+	integer i;
+	wire [BUS_WIDTH-1:0] zeros = 0;
+	
+	genvar num_mat;
+	generate for(num_mat = 0 ; num_mat < SP_NTARGETS ; num_mat = num_mat + 1) begin : write_block
+		genvar num_element;
+		for(num_element = 0; num_element < MAX_DIM**2 ; num_element = 	num_element + 1) begin : write_element
+			always @(posedge clk_i) begin
+				if(!rst_ni) begin 
+					//for(i=0;i<SP_NTARGETS;i=i+1) begin 
+					scratchpad_reg[num_mat][num_element]  <= zeros;
+					//end
+				end 
+				else  if(ena_write && num_mat[$clog2(SP_NTARGETS)-1:0] == write_target[$clog2(SP_NTARGETS)-1:0]) begin 		 
+					scratchpad_reg[num_mat[$clog2(SP_NTARGETS)-1:0]][num_element]  <= Data_i[(num_element+1)*BUS_WIDTH - 1:num_element*BUS_WIDTH];
+				end
+			end
 		end
-  end
+		
+	end
+	endgenerate
+		
+
+
+	always @(*) begin 
+		
+		Data_o	= scratchpad_reg[address_i][sub_address_i];
+	
+	end
+
+	
+	//assign Mat_o = scratchpad_reg[address_i_for_op_c[$clog2(SP_NTARGETS)-1:0]];  
+	genvar j;
+	generate for(j=0;j<MAX_DIM**2;j=j+1) begin : read_mat_block
+		assign Mat_o[BUS_WIDTH*(j+1)-1:BUS_WIDTH*j] = scratchpad_reg[address_i_for_op_c][j];
+	end
+	endgenerate
   
+  
+
 endmodule
+
+
