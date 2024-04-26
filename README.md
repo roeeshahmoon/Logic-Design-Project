@@ -54,6 +54,10 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
 
 The accelerator operates based on control signals provided through the `pwrite_i`, `penable_i`, and `pwdata_i` inputs. Status of the accelerator operation is indicated through the `busy_o` and `done_o` outputs.
 
+### Flow Chart
+![Flow_chart](/doc/Images/Flow_chart.png)
+
+
 ## Authors
 
 - Roee Shahmoon
