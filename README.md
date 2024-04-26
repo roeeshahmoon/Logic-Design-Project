@@ -68,7 +68,7 @@ Status of the accelerator operation is indicated through the `busy_o` and `done_
 
 ## Verification 
 
-## Test Bench Block Diagram
+### Test Bench Block Diagram
 
 ![Test_Bench](/doc/Images/Test_Bench.png)
 
