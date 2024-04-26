@@ -25,7 +25,8 @@ wire rst_i = intf.rst;
 
 matmul_stim #(
     .INSTRUCTIONS_FILE($sformatf("%s/Bus_File.txt",RESOURCE_BASE)),
-	.OUTPUTE_FILE($sformatf("%s/Outpute_design_File.txt",RESOURCE_BASE))//making the output file in the same place like the source
+	.OUTPUTE_MAT_RES_FILE($sformatf("%s/MAT_RES_DUT.txt",RESOURCE_BASE)),//making the output file in the same place like the source
+	.OUTPUTE_FLAGS_RES_FILE($sformatf("%s/FLAGS_RES_DUT.txt",RESOURCE_BASE))//making the output file in the same place like the source
 ) u_stim (
     .intf(intf),
     // TB Status

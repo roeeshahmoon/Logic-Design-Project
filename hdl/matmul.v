@@ -9,8 +9,14 @@
 
 `define IDLE 1'b0 
 `define WAIT 1'b1 
+/*
+	Author: Roee Shahmoon, ID: 206564759
+	Author: Noam Klainer, ID: 316015411
+	
+	These module is top  model.
+*/
 
-module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_WIDTH = 16,parameter SP_NTARGETS = 2)(clk_i, rst_ni, psel_i, penable_i,
+module matmul#(parameter BUS_WIDTH = 8,parameter DATA_WIDTH = 4,parameter ADDR_WIDTH = 12,parameter SP_NTARGETS = 2)(clk_i, rst_ni, psel_i, penable_i,
 			pwrite_i, pstrb_i, pwdata_i, paddr_i,
 			pready_o, pslverr_o, prdata_o, busy_o, done_o);
 			
@@ -39,7 +45,8 @@ module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_
 	reg [15:0] write_data_control;
 	wire [BUS_WIDTH-1:0] buffer_Mat_A,buffer_Mat_B;
 	reg [BUS_WIDTH-1:0] prdata_mux;
-	wire [MAX_DIM**2 - 1:0] flags;
+	wire [MAX_DIM**2 - 1:0] flags_i;
+	reg [MAX_DIM**2 - 1:0] flags_reg;
 	wire [15:0] control_register;
 	wire [BUS_WIDTH*MAX_DIM**2 - 1:0] MAT_RES,operand_C_i;
 	reg [BUS_WIDTH*MAX_DIM**2 - 1:0] operand_C_o;
@@ -48,7 +55,6 @@ module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_
 	wire [1:0] m;
 	wire done;
 	wire   [$clog2(3*MAX_DIM-2) -1:0] counter;
-	wire [BUS_WIDTH-1:0] S [0:MAX_DIM-1][0:MAX_DIM-1];
 	reg [0:0] state;
 	reg busy_signal,start_bit ;
 	reg [5+$clog2(MAX_DIM)-1:5] sub_addressing_operand ;
@@ -101,22 +107,6 @@ module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_
 	  );
 	  
 
-
-
-
-    matmul_calculator#(.DATA_WIDTH(DATA_WIDTH),.BUS_WIDTH(BUS_WIDTH)) matmul_calculator_by_systolic_array (
-        .A(buffer_Mat_A),
-		.B(buffer_Mat_B),
-		.C(operand_C_o),
-		.clk_i(clk_i),
-		.rst_ni(rst_ni),
-		.start_bit(control_register [0]),
-		.mode_bit(control_register[1]),
-		.flags(flags),
-        .M(MAT_RES),
-		.done(done),
-		.counter(counter)
-    );
 	
 	
 	control_reg control_register_module (        
@@ -148,7 +138,7 @@ module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_
 		.Address_sel_flags_reg(Address_sel_flags_reg)
 	  );
 
-	scratchpad#(.BUS_WIDTH(BUS_WIDTH),.DATA_WIDTH(DATA_WIDTH),.ADDR_WIDTH(ADDR_WIDTH),.SP_NTARGETS(SP_NTARGETS)) scratchpad_inst
+	scratchpad#(.BUS_WIDTH(BUS_WIDTH),.DATA_WIDTH(DATA_WIDTH),.SP_NTARGETS(SP_NTARGETS)) scratchpad_inst
 			(.clk_i(clk_i), 
 			 .rst_ni(rst_ni),
 			 .write_target(write_target_sp),
@@ -161,18 +151,24 @@ module matmul#(parameter BUS_WIDTH = 16,parameter DATA_WIDTH = 4,parameter ADDR_
 			 .Mat_o(operand_C_i));
  
 
+    matmul_calculator#(.DATA_WIDTH(DATA_WIDTH),.BUS_WIDTH(BUS_WIDTH)) matmul_calculator_by_systolic_array (
+        .A(buffer_Mat_A),
+		.B(buffer_Mat_B),
+		.C(operand_C_o),
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.start_bit(control_register [0]),
+		.mode_bit(control_register[1]),
+		.flags(flags_i),
+        .M(MAT_RES),
+		.done(done),
+		.counter(counter)
+    );
 
 assign n = control_register[9:8];
 assign k = control_register[11:10];
 assign m = control_register[13:12]; 
- genvar row;
- generate for(row = 0; row<MAX_DIM; row = row + 1) begin: test_result_row 
-	genvar col;
-	for(col=0;col<MAX_DIM;col=col+1) begin: test_result_col 
-		assign S[row][col] = MAT_RES[(row*MAX_DIM+col+1)*BUS_WIDTH-1:(row*MAX_DIM+col)*BUS_WIDTH];
-	end
-end
-endgenerate
+
    
    
  always	@(*) begin : mux_for_pdata_o
@@ -193,7 +189,7 @@ endgenerate
 			prdata_mux	<=	read_data_SP;
 		end
 		else if(Address_sel_flags_reg) begin 
-			prdata_mux	<=	flags;
+			prdata_mux	<=	flags_reg;
 		end
 		else begin 
 			prdata_mux <= 0;
@@ -204,13 +200,13 @@ end
 			
 always @(posedge clk_i) begin 
 	if(!rst_ni) begin 
-		operand_C_o = 0;
+		operand_C_o <= 0;
 	end
 	else if(!busy_signal) begin 
-		operand_C_o = operand_C_i;
+		operand_C_o <= operand_C_i;
 	end
 	else begin 
-		operand_C_o = operand_C_o;
+		operand_C_o <= operand_C_o;
 	end
 end
    
@@ -221,16 +217,16 @@ end
  
    if(!rst_ni)
      begin
-		state = `IDLE;  
-		prdata_o = 0;
-		pready_o =0;
-		busy_signal	=	0;
-		pslverr_o	= 1'b0;	
-		write_ena_control_reg = 0;	
-		write_ena_Mat_B = 0;
-		write_ena_Mat_A = 0;
-		start_bit = 0;
-		
+		state <= `IDLE;  
+		prdata_o <= 0;
+		pready_o <=0;
+		busy_signal	<=	0;
+		pslverr_o	<= 1'b0;	
+		write_ena_control_reg <= 0;	
+		write_ena_Mat_B <= 0;
+		write_ena_Mat_A <= 0;
+		start_bit <= 0;
+		flags_reg <= 0;
 	  
      end
    else
@@ -238,79 +234,81 @@ end
 		//state = state;
 		case (state)
 		`IDLE: begin 
-			prdata_o = 0;
-			busy_signal = done ? 0:busy_signal;
-			start_bit = done ?   0:start_bit;
-			write_ena_control_reg = 0;
-			write_ena_Mat_A = 0;
-			write_ena_Mat_B = 0;
+			prdata_o <= 0;
+			busy_signal <= done ? 0:busy_signal;
+			start_bit <= done ?   0:start_bit;
+			write_ena_control_reg <= 0;
+			write_ena_Mat_A <= 0;
+			write_ena_Mat_B <= 0;
 			
 			
 			if(psel_i) begin
-				pready_o = 1'b1;
-				state = `WAIT;
-				sub_addressing_sp = paddr_i[5+2*$clog2(MAX_DIM)-1:5];
+				pready_o <= 1'b1;
+				state <= `WAIT;
+				sub_addressing_sp <= paddr_i[5+2*$clog2(MAX_DIM)-1:5];
 
 			end
 			else begin
-				pready_o	= 1'b0;
-				state = `IDLE;
+				pready_o	<= 1'b0;
+				state <= `IDLE;
 			end								
 		end
 			
 		`WAIT: begin
 			if(psel_i) begin 
-				pready_o = 1'b1;
-				state = `WAIT;
-				sub_addressing_sp = paddr_i[5+2*$clog2(MAX_DIM)-1:5];
+				pready_o <= 1'b1;
+				state <= `WAIT;
+				sub_addressing_sp <= paddr_i[5+2*$clog2(MAX_DIM)-1:5];
 			end
 			else begin 
-				state = `IDLE;
-				pready_o = 1'b0;
+				state <= `IDLE;
+				pready_o <= 1'b0;
 			end
 			if(psel_i&&penable_i) begin 
-				prdata_o = prdata_mux;
+				prdata_o <= prdata_mux;
 				if(pwrite_i) begin
-					busy_signal = done ? 0:busy_signal;
+					busy_signal <= done ? 0:busy_signal;
+					
 					if(busy_signal || pstrb_i == 0) begin 
-						pslverr_o	= 1'b1;
+						pslverr_o	<= 1'b1;
 					end
 					else if(!paddr_i[2] && !paddr_i[3] && !paddr_i[4]) begin 
-						write_data_control[15:1] = pwdata_i[15:1];
-						start_bit = pwdata_i[0];
-						busy_signal = start_bit;
-						write_ena_control_reg = 1;
-						write_ena_Mat_A = 0;
-						write_ena_Mat_B = 0;
+						write_data_control[15:1] <= pwdata_i[15:1];
+						start_bit <= pwdata_i[0];
+						write_data_control[0] <= pwdata_i[0];
+						busy_signal <= pwdata_i[0];
+						write_ena_control_reg <= 1;
+						write_ena_Mat_A <= 0;
+						write_ena_Mat_B <= 0;
 						
 						
 						//pslverr_o	= n >= MAX_DIM-1 || k >= MAX_DIM-1 || m >= MAX_DIM-1 ? 1:0;
 					end
 					else if(paddr_i[2] && !paddr_i[3] && !paddr_i[4]) begin 
-						write_data_Mat_A = pwdata_i;
-						write_ena_Mat_A = 1;
-						write_ena_Mat_B = 0;
-						write_ena_control_reg = 0;
-						sub_addressing_operand = paddr_i[5+$clog2(MAX_DIM)-1:5];
+						write_data_Mat_A <= pwdata_i;
+						write_ena_Mat_A <= 1;
+						write_ena_Mat_B <= 0;
+						write_ena_control_reg <= 0;
+						sub_addressing_operand <= paddr_i[5+$clog2(MAX_DIM)-1:5];
 						//pslverr_o	= sub_addressing_operand > n ? 1:0;
 					end
 					else if(!paddr_i[2] && paddr_i[3] && !paddr_i[4]) begin 
-						write_data_Mat_B = pwdata_i;
-						write_ena_Mat_B = 1;
-						write_ena_Mat_A = 0;
-						write_ena_control_reg = 0;
-						sub_addressing_operand = paddr_i[5+$clog2(MAX_DIM)-1:5];
+						write_data_Mat_B <= pwdata_i;
+						write_ena_Mat_B <= 1;
+						write_ena_Mat_A <= 0;
+						write_ena_control_reg <= 0;
+						sub_addressing_operand <= paddr_i[5+$clog2(MAX_DIM)-1:5];
 						//pslverr_o	= sub_addressing_operand > k ? 1:0;
 					end
 					else begin 
-						write_ena_control_reg = 0;
-						write_ena_Mat_A = 0;
-						write_ena_Mat_B = 0;
+						write_ena_control_reg <= 0;
+						write_ena_Mat_A <= 0;
+						write_ena_Mat_B <= 0;
 					end
 				end
 				else begin 
-					busy_signal = done ? 0:busy_signal;
-					start_bit = done ? 0:start_bit;
+					busy_signal <= done ? 0:busy_signal;
+					start_bit <= done ? 0:start_bit;
 					
 				end
 			
@@ -318,8 +316,8 @@ end
 					
 			end
 			else begin 
-				busy_signal = done ? 0:busy_signal;
-				start_bit = done ? 0:start_bit;	
+				busy_signal <= done ? 0:busy_signal;
+				start_bit <= done ? 0:start_bit;	
 			end
 
 				
@@ -335,6 +333,7 @@ end
 		end
 		
 		endcase
+		flags_reg  <= done? flags_i:flags_reg;
 	end
 	
 end

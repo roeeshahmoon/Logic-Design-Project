@@ -4,7 +4,8 @@
 // Stimulus Module
 module matmul_stim #(
     parameter string INSTRUCTIONS_FILE = "",
-	parameter string OUTPUTE_FILE = "",
+	parameter string OUTPUTE_MAT_RES_FILE = "",
+	parameter string OUTPUTE_FLAGS_RES_FILE = "",
     parameter bit     VERBOSE    = 1'b0
 ) (
     matmul_intf.STIMULUS    intf,
@@ -20,7 +21,7 @@ module matmul_stim #(
 	import matmul_pkg::elements_data_bus_t;
 	import matmul_pkg::number_tests;
     // File descriptors
-    integer instructions_fd,output_fd ;
+    integer instructions_fd,mat_res_fd,flags_res_fd ;
     // Dimensions
     integer r, c, counter_test;
     // Operation counter
@@ -31,6 +32,7 @@ module matmul_stim #(
 	wire        done_i    = intf.done;
 	data_bus_t 	prdata_i;
 	logic [1:0] sub_address_sp;
+	bit [MAX_DIM**2-1:0] flags;
     // Interface signals declared internally
     logic       psel_o, penable_o, pwrite_o;
     data_bus_t        pwdata_o;
@@ -46,7 +48,8 @@ module matmul_stim #(
     // TB Signals
     //assign out_width_o     = pix_width;
     //assign out_height_o  = pix_height;
-
+	int i =0;
+	int j =0;
     task do_reset; begin
         psel_o        = 1'b0;
 		penable_o        = 1'b0;
@@ -58,6 +61,8 @@ module matmul_stim #(
 		counter_test = 0;
 		r = 0;
 		c = 0;
+		i = 0;
+		j = 0;
         //img_done_o    = 1'b0;
         stim_done_o = 1'b0;
         // Open Stimulus files
@@ -71,8 +76,10 @@ module matmul_stim #(
         if( !reopen ) begin
             // First time 
             instructions_fd = $fopen(INSTRUCTIONS_FILE, "r");
-			output_fd = $fopen(OUTPUTE_FILE, "w");
-			$fwrite(output_fd, "\n");
+			mat_res_fd = $fopen(OUTPUTE_MAT_RES_FILE, "w");
+			flags_res_fd = $fopen(OUTPUTE_FLAGS_RES_FILE, "w");
+			$fwrite(mat_res_fd, "\n");
+			$fwrite(flags_res_fd, "\n");
             if(instructions_fd == 0) $fatal(1, $sformatf("Failed to open %s", INSTRUCTIONS_FILE));
         end // else img_done_o = 1'b1;
 
@@ -80,9 +87,9 @@ module matmul_stim #(
 
     end endtask
 
- task write_output_file(input integer iteration_test);
+ task write_mat_res_file(input integer iteration_test);
  begin
- $fwrite(output_fd, "Mat Res in Test %0d is: \n\n", iteration_test);
+ $fwrite(mat_res_fd, "Mat Res in Test %0d is: \n\n", iteration_test);
  @(posedge clk)
  paddr_o = 0;
  psel_o = 1;
@@ -91,39 +98,74 @@ module matmul_stim #(
  penable_o = 1;
  @(posedge clk)
  penable_o = 0;
+ psel_o = 0;
  @(posedge clk)
  sub_address_sp = intf.prdata[3:2];
  paddr_o = 16 + 4*sub_address_sp + 0;
  repeat(MAX_DIM**2) begin
 	paddr_o[8:5] = r*MAX_DIM + c;
+	 psel_o = 1;
 	@(posedge clk)
 	penable_o = 1;
 	@(posedge clk)
 	penable_o = 0;
+	psel_o = 0;
 	@(posedge clk)
 	prdata_i = intf.prdata;
-	$fwrite(output_fd, "%0d.0",prdata_i);
+	$fwrite(mat_res_fd, "%0d",prdata_i);
 	if(c == MAX_DIM-1) begin 
-		$fwrite(output_fd , "\n");
+		$fwrite(mat_res_fd , "\n");
 		r = r + 1;
 		c = 0;
 	end
 	else begin 
-		$fwrite(output_fd , ",");
+		$fwrite(mat_res_fd , ",");
 		c = c + 1;
 	end
 end
 r = 0;
 c = 0;
 if(iteration_test < number_tests) begin 
-	$fwrite(output_fd, "----------------------------------------------------------------------------------------------------\n");
+	$fwrite(mat_res_fd, "----------------------------------------------------------------------------------------------------\n");
 end
 else begin 
-	$fwrite(output_fd, "----------------------------------------------------------------------------------------------------");
+	$fwrite(mat_res_fd, "----------------------------------------------------------------------------------------------------");
 end	
 end endtask
 	
-
+ task write_flags_file(input integer iteration_test);
+ begin
+ $fwrite(flags_res_fd, "Flags in Test %0d is: \n\n", iteration_test);
+ @(posedge clk)
+ paddr_o = 12;
+ psel_o = 1;
+ pwrite_o = 0;
+ @(posedge clk)
+ penable_o = 1;
+ @(posedge clk)
+ penable_o = 0;
+ psel_o = 0;
+ @(posedge clk)
+ flags = intf.prdata;
+ for(i=0;i<MAX_DIM;i=i+1) begin 
+	for(j=0;j<MAX_DIM;j=j+1) begin 
+		$fwrite(flags_res_fd, "%0d",flags[MAX_DIM*i+j+:1]);
+		if(j == MAX_DIM-1) begin 
+			$fwrite(flags_res_fd , "\n");
+		end
+		else begin
+			$fwrite(flags_res_fd , ",");
+		end
+	end
+end
+ 
+if(iteration_test < number_tests) begin 
+	$fwrite(flags_res_fd, "----------------------------------------------------------------------------------------------------\n");
+end
+else begin 
+	$fwrite(flags_res_fd, "----------------------------------------------------------------------------------------------------");
+end	
+end endtask
 
 
 initial begin: INIT_STIM
@@ -131,7 +173,7 @@ initial begin: INIT_STIM
 	
 	do_reset();
 	
-	while(1) begin
+	while(counter_test < number_tests) begin
 		@(posedge clk)
 		pwrite_o = 1;
 		psel_o = 1;
@@ -139,8 +181,8 @@ initial begin: INIT_STIM
 		if($fscanf(instructions_fd, "%d,%d,%d/n", pwdata_o, paddr_o,pstrb_o) != 3)begin
                 $fatal(1, "Failed to read the metadata line of IMAGE_FILE");
 				$fclose(instructions_fd);
-				$fclose(output_fd);
-				@(posedge clk) stim_done_o = 1'b1;
+				$fclose(mat_res_fd);
+				$fclose(flags_res_fd);
 				break;
         end
 		
@@ -149,16 +191,25 @@ initial begin: INIT_STIM
 			penable_o = 1;
 			@(posedge clk)
 			penable_o = 0;
-			//pwrite_o = 0;
+			pwrite_o = 0;
 			wait(done_i == 1);
-			write_output_file(counter_test+1);
 			counter_test = counter_test + 1;
+			write_mat_res_file(counter_test);
+			write_flags_file(counter_test);
+			
 		end
 		
 		@(posedge clk)
 		penable_o = 1;
+		@(posedge clk)
+		penable_o = 0;
+		psel_o = 0;
 		
 	end
+	$fclose(instructions_fd);
+	$fclose(mat_res_fd);
+	$fclose(flags_res_fd);
+	stim_done_o = 1'b1;
 end
 
 
