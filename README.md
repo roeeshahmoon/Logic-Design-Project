@@ -20,7 +20,7 @@ The Matrix Multiplication Accelerator is a hardware module designed to efficient
 
 ## Usage
 It is designed to efficiently perform matrix multiplication using a systolic array architecture, which enables a highly parallel
-and pipelined computational structure, to achieve high throughput and reduced latency compared to traditional sequential methods.
+and pipelined computational structure to achieve high throughput and reduced latency compared to traditional sequential methods.
 
 ### Technology Stack
 
