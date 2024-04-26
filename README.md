@@ -48,7 +48,7 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
     
 ### Matmul High Level Design Block Diagram
 
-![Block_Diagram](/Users/roeeshahmoon/Desktop/Logic-Design-Project/doc/Images/Block_Diagram.png)
+![Block_Diagram](/Logic-Design-Project/doc/Images/Block_Diagram.png)
 
 ### Control and Status
 
