@@ -58,7 +58,6 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
   - `done_o`: Done output.
 
 ### Flow Chart
-![Flow_Chart](/doc/Images/Flow_Chart.png)
 
 ### Control and Status
 
