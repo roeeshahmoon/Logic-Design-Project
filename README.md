@@ -77,6 +77,8 @@ Status of the accelerator operation is indicated through the `busy_o` and `done_
  `Flags_Res.txt`
  `SP.txt`
 
+ ![Test_Exa](/doc/Images/Test_Exa.png)
+
 the stimulus read instructions from  `Bus_File.txt` and generate APB master to write this data into the design.
 After we finish writing to design all the data for the specific test, the stimulus going to sleep until the design is done. 
 When the design is done, we read the result into files:  `Mat_Res.txt`,  `Flags_Res.txt`.
@@ -84,7 +86,6 @@ We also doing this in the stimulus with the APB master.
 In the end we are comparing between the result files from DUT `MAT_RES_DUT.txt` and `FLAGS_RES_DUT.txt` to golden script. 
 We print to the screen how much hits, and where we missed.
 
-![Test_Exa](/doc/Images/Test_Exa.png)
 
 ## Authors
 
