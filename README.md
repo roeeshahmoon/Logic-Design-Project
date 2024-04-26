@@ -76,7 +76,7 @@ Status of the accelerator operation is indicated through the `busy_o` and `done_
  `Flags_Res.txt`
  `SP.txt`
 
-the stimulus read instructions from  `Bus_File.txt` and generate APB master to write this data into the design. In this file we did a lot of tests together.
+the stimulus read instructions from  `Bus_File.txt` and generate APB master to write this data into the design.
 After we finish writing to design all the data for the specific test, the stimulus going to sleep until the design is done. 
 When the design is done, we read the result into 2 files:  `Mat_Res.txt`,  `Flags_Res.txt`.
 We also doing this in the stimulus with the APB master.
