@@ -14,7 +14,7 @@ The Matrix Multiplication Accelerator is a hardware module designed to efficient
 - Integration with control logic to manage matrix multiplication operations.
 - Status signals for indicating busy state and operation completion.
 
-## Matmul High Level Design Block Diagram
+## High Level Design Block Diagram
 
 ![Block_Diagram](/doc/Images/Block_Diagram.png)
 
