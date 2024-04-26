@@ -88,7 +88,7 @@ The stimulus read instructions from  `Bus_File.txt` and generate APB master to w
  ![Test_Exa](/doc/Images/Test_Exa.png)
 
 In the end we are comparing between the result files from DUT `MAT_RES_DUT.txt` and `FLAGS_RES_DUT.txt` to golden script. 
-We print to the screen how much hits, and where we missed.
+We print to the screen how much hits and miss we have.
 
 
 ## Authors
