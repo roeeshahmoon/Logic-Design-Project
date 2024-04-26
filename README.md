@@ -25,7 +25,7 @@ and pipelined computational structure to achieve high throughput and reduced lat
 ### Technology Stack
 
 - Design stage written in Verilog using HDL
-- Verification Stage written in Python & System Verilog
+- Verification Stage written in Python Scripts, System Verilog and ModelSim
 
 ### Instantiation
 
