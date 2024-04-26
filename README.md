@@ -1,4 +1,4 @@
-# Matrix Multiplication Accelerator README
+# Matrix Multiplication Accelerator 
 
 ## Introduction
 
@@ -13,6 +13,10 @@ The Matrix Multiplication Accelerator is a hardware module designed to efficient
 - Flexible addressing schemes for memory access.
 - Integration with control logic to manage matrix multiplication operations.
 - Status signals for indicating busy state and operation completion.
+
+## Matmul High Level Design Block Diagram
+
+![Block_Diagram](/doc/Images/Block_Diagram.png)
 
 ## Usage
 
@@ -45,10 +49,6 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
   - `prdata_o`: Read data output.
   - `busy_o`: Busy output.
   - `done_o`: Done output.
-    
-### Matmul High Level Design Block Diagram
-
-![Block_Diagram](/doc/Images/Block_Diagram.png)
 
 ### Control and Status
 
