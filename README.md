@@ -15,6 +15,7 @@ The Matrix Multiplication Accelerator is a hardware module designed to efficient
 - Status signals for indicating busy state and operation completion.
 
 ## High Level Design Block Diagram
+![Test_Bench.png](/doc/Images/Test_Bench.png)
 
 ![Block_Diagram](/doc/Images/Block_Diagram.png)
 
@@ -83,7 +84,7 @@ We also doing this in the stimulus with the APB master.
 In the end we are comparing between the result files from DUT `MAT_RES_DUT.txt` and `FLAGS_RES_DUT.txt` to golden script. 
 We print to the screen how much hits, and where we missed.
 
-![Tb](/doc/Images/Test_Bench.png)
+![Test_Bench.png](/doc/Images/Test_Bench.png)
 
 
 ## Authors
