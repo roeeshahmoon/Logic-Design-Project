@@ -62,7 +62,7 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
 
 ### Control and Status
 
-The accelerator operates based on control signals provided through the `pwrite_i`, `penable_i`, and `pwdata_i` inputs.
+The accelerator operates based on control signals provided through the `psel_i`, `penable_i`, `pwdata_i` and `paddr_i` inputs from APB (Advanced Peripheral Bus).
 Status of the accelerator operation is indicated through the `busy_o` and `done_o` outputs.
 
 
