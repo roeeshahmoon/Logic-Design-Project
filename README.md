@@ -83,7 +83,7 @@ We also doing this in the stimulus with the APB master.
 In the end we are comparing between the result files from DUT `MAT_RES_DUT.txt` and `FLAGS_RES_DUT.txt` to golden script. 
 We print to the screen how much hits, and where we missed.
 
-![Flow_Chart](/doc/Images/Flow_Chart.png)
+![Flow_Chart](/doc/Images/Tb.png)
 
 
 ## Authors
