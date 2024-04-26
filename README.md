@@ -67,7 +67,7 @@ Status of the accelerator operation is indicated through the `busy_o` and `done_
 
 ## Verification 
 
- we read all the data for the testbench from file `Bus_File.txt`, we randomize all the data on the python script `golden.py`.
+ we read all the data for the testbench from file `Bus_File.txt`, we randomize all the data on the python script `golden.py` using `random moudle`.
  We wrote those data into files:
  `Param_File.txt`
  `Mat_A.txt`
