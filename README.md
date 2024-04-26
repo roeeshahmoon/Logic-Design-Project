@@ -65,6 +65,23 @@ To use the Matrix Multiplication Accelerator in your Verilog design, instantiate
 The accelerator operates based on control signals provided through the `psel_i`, `penable_i`, `pwdata_i` and `paddr_i` inputs from APB.
 Status of the accelerator operation is indicated through the `busy_o` and `done_o` outputs.
 
+## Verification 
+
+ we read all the data for the testbench from file `Bus_File.txt`, we randomize all the data on the python script `golden.py`.
+ We wrote those data into files:
+ `Param_File.txt`
+ `Mat_A.txt`
+ `Mat_B.txt`
+ `Mat_Res.txt`
+ `Flags_Res.txt`
+ `SP.txt`
+
+the stimulus read instructions from  `Bus_File.txt` and generate APB master to write this data into the design. In this file we did a lot of tests together.
+After we finish writing to design all the data for the specific test, the stimulus going to sleep until the design is done. 
+When the design is done, we read the result into 2 files:  `Mat_Res.txt`,  `Flags_Res.txt`.
+We also doing this in the stimulus with the APB master.
+In the end we are comparing between the result files from DUT `MAT_RES_DUT.txt` and `FLAGS_RES_DUT.txt` to golden script. 
+We print to the screen how much hits, and where we missed.
 
 ## Authors
 
